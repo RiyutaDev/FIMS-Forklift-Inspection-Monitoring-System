@@ -1,0 +1,316 @@
+/*
+|--------------------------------------------------------------------------
+| FIMS - Button Component
+|--------------------------------------------------------------------------
+|
+| Standard Button Component
+| - Primary
+| - Secondary
+| - Success
+| - Danger
+| - Warning
+| - Info
+| - Outline
+| - Ghost
+| - Link
+| - Loading
+|
+*/
+
+@layer components {
+
+    /* ==========================================================
+       Base Button
+    ========================================================== */
+
+    .btn {
+
+        @apply inline-flex
+               items-center
+               justify-center
+               gap-2
+               rounded-xl
+               font-medium
+               transition-all
+               duration-200
+               select-none
+               cursor-pointer
+               whitespace-nowrap
+               focus:outline-none
+               focus:ring-2
+               focus:ring-offset-2
+               disabled:opacity-60
+               disabled:pointer-events-none;
+
+    }
+
+    /* ==========================================================
+       Size
+    ========================================================== */
+
+    .btn-xs {
+
+        @apply px-2 py-1 text-xs;
+
+    }
+
+    .btn-sm {
+
+        @apply px-3 py-2 text-sm;
+
+    }
+
+    .btn-md {
+
+        @apply px-5 py-2.5 text-sm;
+
+    }
+
+    .btn-lg {
+
+        @apply px-6 py-3 text-base;
+
+    }
+
+    .btn-xl {
+
+        @apply px-8 py-4 text-lg;
+
+    }
+
+    /* ==========================================================
+       Width
+    ========================================================== */
+
+    .btn-block {
+
+        @apply w-full;
+
+    }
+
+    /* ==========================================================
+       Primary
+    ========================================================== */
+
+    .btn-primary {
+
+        @apply bg-cyan-600
+               text-white
+               hover:bg-cyan-700
+               active:scale-95
+               focus:ring-cyan-500;
+
+    }
+
+    /* ==========================================================
+       Secondary
+    ========================================================== */
+
+    .btn-secondary {
+
+        @apply bg-slate-200
+               text-slate-700
+               hover:bg-slate-300
+               active:scale-95
+               focus:ring-slate-400;
+
+    }
+
+    /* ==========================================================
+       Success
+    ========================================================== */
+
+    .btn-success {
+
+        @apply bg-emerald-600
+               text-white
+               hover:bg-emerald-700
+               active:scale-95
+               focus:ring-emerald-500;
+
+    }
+
+    /* ==========================================================
+       Danger
+    ========================================================== */
+
+    .btn-danger {
+
+        @apply bg-red-600
+               text-white
+               hover:bg-red-700
+               active:scale-95
+               focus:ring-red-500;
+
+    }
+
+    /* ==========================================================
+       Warning
+    ========================================================== */
+
+    .btn-warning {
+
+        @apply bg-amber-500
+               text-white
+               hover:bg-amber-600
+               active:scale-95
+               focus:ring-amber-400;
+
+    }
+
+    /* ==========================================================
+       Info
+    ========================================================== */
+
+    .btn-info {
+
+        @apply bg-blue-600
+               text-white
+               hover:bg-blue-700
+               active:scale-95
+               focus:ring-blue-500;
+
+    }
+
+    /* ==========================================================
+       Outline
+    ========================================================== */
+
+    .btn-outline {
+
+        @apply border
+               border-slate-300
+               bg-white
+               text-slate-700
+               hover:bg-slate-100
+               focus:ring-slate-300;
+
+    }
+
+    /* ==========================================================
+       Ghost
+    ========================================================== */
+
+    .btn-ghost {
+
+        @apply bg-transparent
+               text-slate-700
+               hover:bg-slate-100
+               focus:ring-slate-300;
+
+    }
+
+    /* ==========================================================
+       Link
+    ========================================================== */
+
+    .btn-link {
+
+        @apply bg-transparent
+               text-cyan-600
+               hover:text-cyan-700
+               hover:underline
+               p-0;
+
+    }
+
+    /* ==========================================================
+       Icon Button
+    ========================================================== */
+
+    .btn-icon {
+
+        @apply h-10
+               w-10
+               rounded-xl
+               p-0;
+
+    }
+
+    .btn-icon-sm {
+
+        @apply h-8
+               w-8
+               rounded-lg
+               p-0;
+
+    }
+
+    .btn-icon-lg {
+
+        @apply h-12
+               w-12
+               rounded-2xl
+               p-0;
+
+    }
+
+    /* ==========================================================
+       Loading State
+    ========================================================== */
+
+    .btn-loading {
+
+        @apply cursor-wait
+               opacity-70;
+
+    }
+
+    /* ==========================================================
+       Rounded
+    ========================================================== */
+
+    .btn-pill {
+
+        @apply rounded-full;
+
+    }
+
+    /* ==========================================================
+       Shadow
+    ========================================================== */
+
+    .btn-shadow {
+
+        @apply shadow-md
+               hover:shadow-lg;
+
+    }
+
+    /* ==========================================================
+       Soft Variant
+    ========================================================== */
+
+    .btn-soft-primary {
+
+        @apply bg-cyan-100
+               text-cyan-700
+               hover:bg-cyan-200;
+
+    }
+
+    .btn-soft-success {
+
+        @apply bg-emerald-100
+               text-emerald-700
+               hover:bg-emerald-200;
+
+    }
+
+    .btn-soft-danger {
+
+        @apply bg-red-100
+               text-red-700
+               hover:bg-red-200;
+
+    }
+
+    .btn-soft-warning {
+
+        @apply bg-amber-100
+               text-amber-700
+               hover:bg-amber-200;
+
+    }
+
+}

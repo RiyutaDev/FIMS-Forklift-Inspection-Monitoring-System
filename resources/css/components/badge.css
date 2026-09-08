@@ -1,0 +1,270 @@
+/*
+|--------------------------------------------------------------------------
+| FIMS - Badge Component
+|--------------------------------------------------------------------------
+|
+| Standard Badge Component
+|
+| - Filled
+| - Soft
+| - Outline
+| - Pill
+| - Dot
+| - Size
+|
+*/
+
+@layer components {
+
+    /* ==========================================================
+       Base Badge
+    ========================================================== */
+
+    .badge {
+
+        @apply inline-flex
+               items-center
+               justify-center
+               gap-1.5
+               rounded-lg
+               px-2.5
+               py-1
+               text-xs
+               font-semibold
+               leading-none
+               whitespace-nowrap;
+
+    }
+
+    /* ==========================================================
+       Size
+    ========================================================== */
+
+    .badge-sm {
+
+        @apply px-2
+               py-0.5
+               text-[10px];
+
+    }
+
+    .badge-md {
+
+        @apply px-2.5
+               py-1
+               text-xs;
+
+    }
+
+    .badge-lg {
+
+        @apply px-3.5
+               py-1.5
+               text-sm;
+
+    }
+
+    /* ==========================================================
+       Filled
+    ========================================================== */
+
+    .badge-primary {
+
+        @apply bg-cyan-600
+               text-white;
+
+    }
+
+    .badge-secondary {
+
+        @apply bg-slate-600
+               text-white;
+
+    }
+
+    .badge-success {
+
+        @apply bg-emerald-600
+               text-white;
+
+    }
+
+    .badge-danger {
+
+        @apply bg-red-600
+               text-white;
+
+    }
+
+    .badge-warning {
+
+        @apply bg-amber-500
+               text-white;
+
+    }
+
+    .badge-info {
+
+        @apply bg-sky-600
+               text-white;
+
+    }
+
+    /* ==========================================================
+       Soft
+    ========================================================== */
+
+    .badge-soft-primary {
+
+        @apply bg-cyan-100
+               text-cyan-700;
+
+    }
+
+    .badge-soft-success {
+
+        @apply bg-emerald-100
+               text-emerald-700;
+
+    }
+
+    .badge-soft-danger {
+
+        @apply bg-red-100
+               text-red-700;
+
+    }
+
+    .badge-soft-warning {
+
+        @apply bg-amber-100
+               text-amber-700;
+
+    }
+
+    .badge-soft-info {
+
+        @apply bg-sky-100
+               text-sky-700;
+
+    }
+
+    .badge-soft-secondary {
+
+        @apply bg-slate-100
+               text-slate-700;
+
+    }
+
+    /* ==========================================================
+       Outline
+    ========================================================== */
+
+    .badge-outline-primary {
+
+        @apply border
+               border-cyan-600
+               text-cyan-700
+               bg-transparent;
+
+    }
+
+    .badge-outline-success {
+
+        @apply border
+               border-emerald-600
+               text-emerald-700
+               bg-transparent;
+
+    }
+
+    .badge-outline-danger {
+
+        @apply border
+               border-red-600
+               text-red-700
+               bg-transparent;
+
+    }
+
+    .badge-outline-warning {
+
+        @apply border
+               border-amber-500
+               text-amber-700
+               bg-transparent;
+
+    }
+
+    .badge-outline-info {
+
+        @apply border
+               border-sky-600
+               text-sky-700
+               bg-transparent;
+
+    }
+
+    .badge-outline-secondary {
+
+        @apply border
+               border-slate-500
+               text-slate-700
+               bg-transparent;
+
+    }
+
+    /* ==========================================================
+       Pill
+    ========================================================== */
+
+    .badge-pill {
+
+        @apply rounded-full;
+
+    }
+
+    /* ==========================================================
+       Dot Badge
+    ========================================================== */
+
+    .badge-dot {
+
+        @apply inline-flex
+               items-center
+               gap-2;
+
+    }
+
+    .badge-dot::before {
+
+        content: "";
+
+        @apply h-2
+               w-2
+               rounded-full
+               bg-current;
+
+    }
+
+    /* ==========================================================
+       Icon Badge
+    ========================================================== */
+
+    .badge-icon {
+
+        @apply inline-flex
+               items-center
+               gap-1.5;
+
+    }
+
+    .badge-icon svg,
+    .badge-icon i {
+
+        @apply h-3.5
+               w-3.5;
+
+    }
+
+}

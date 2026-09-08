@@ -1,0 +1,259 @@
+/*
+|--------------------------------------------------------------------------
+| FIMS - Login Page
+|--------------------------------------------------------------------------
+*/
+
+@layer components {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Wrapper
+    |--------------------------------------------------------------------------
+    */
+
+    .login-page{
+
+        @apply min-h-screen
+               grid
+               lg:grid-cols-2
+               bg-slate-100;
+
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Left Side
+    |--------------------------------------------------------------------------
+    */
+
+    .login-banner{
+
+        @apply hidden
+               lg:flex
+               relative
+               overflow-hidden
+               items-center
+               justify-center
+               bg-gradient-to-br
+               from-cyan-700
+               via-cyan-600
+               to-slate-900;
+
+    }
+
+    .login-overlay{
+
+        @apply absolute
+               inset-0
+               bg-black/20;
+
+    }
+
+    .login-banner-content{
+
+        @apply relative
+               z-10
+               max-w-xl
+               px-12
+               text-white;
+
+    }
+
+    .login-banner-title{
+
+        @apply text-5xl
+               font-bold
+               leading-tight;
+
+    }
+
+    .login-banner-text{
+
+        @apply mt-6
+               text-lg
+               text-cyan-100
+               leading-8;
+
+    }
+
+    .login-illustration{
+
+        @apply mt-12
+               w-full
+               max-w-lg;
+
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Right Side
+    |--------------------------------------------------------------------------
+    */
+
+    .login-container{
+
+        @apply flex
+               items-center
+               justify-center
+               px-6
+               py-10;
+
+    }
+
+    .login-box{
+
+        @apply w-full
+               max-w-md;
+
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Logo
+    |--------------------------------------------------------------------------
+    */
+
+    .login-logo{
+
+        @apply flex
+               justify-center
+               mb-8;
+
+    }
+
+    .login-logo-circle{
+
+        @apply flex
+               h-20
+               w-20
+               items-center
+               justify-center
+               rounded-3xl
+               bg-cyan-600
+               text-white
+               text-3xl
+               font-bold
+               shadow-xl;
+
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Heading
+    |--------------------------------------------------------------------------
+    */
+
+    .login-title{
+
+        @apply text-3xl
+               font-bold
+               text-slate-800
+               text-center;
+
+    }
+
+    .login-subtitle{
+
+        @apply mt-3
+               text-center
+               text-slate-500;
+
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Form
+    |--------------------------------------------------------------------------
+    */
+
+    .login-form{
+
+        @apply mt-10
+               space-y-5;
+
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Remember
+    |--------------------------------------------------------------------------
+    */
+
+    .login-options{
+
+        @apply flex
+               items-center
+               justify-between;
+
+    }
+
+    .login-remember{
+
+        @apply flex
+               items-center
+               gap-2
+               text-sm
+               text-slate-600;
+
+    }
+
+    .login-forgot{
+
+        @apply text-sm
+               font-medium
+               text-cyan-600
+               hover:text-cyan-700;
+
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Button
+    |--------------------------------------------------------------------------
+    */
+
+    .login-submit{
+
+        @apply mt-2;
+
+    }
+
+    .login-submit .btn{
+
+        @apply w-full;
+
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Footer
+    |--------------------------------------------------------------------------
+    */
+
+    .login-footer{
+
+        @apply mt-10
+               text-center
+               text-sm
+               text-slate-500;
+
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Mobile
+    |--------------------------------------------------------------------------
+    */
+
+    @media(max-width:1024px){
+
+        .login-page{
+
+            @apply grid-cols-1;
+
+        }
+
+    }
+
+}

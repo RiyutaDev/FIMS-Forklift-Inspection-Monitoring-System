@@ -1,0 +1,370 @@
+/*
+|--------------------------------------------------------------------------
+| FIMS - Form Component
+|--------------------------------------------------------------------------
+|
+| Standard Form Component
+| - Label
+| - Input
+| - Select
+| - Textarea
+| - Checkbox
+| - Radio
+| - Switch
+| - Validation
+| - Group
+|
+*/
+
+@layer components {
+
+    /* ==========================================================
+       Form Layout
+    ========================================================== */
+
+    .form-group {
+
+        @apply mb-5;
+
+    }
+
+    .form-row {
+
+        @apply grid gap-5 md:grid-cols-2;
+
+    }
+
+    .form-row-3 {
+
+        @apply grid gap-5 md:grid-cols-3;
+
+    }
+
+    .form-row-4 {
+
+        @apply grid gap-5 md:grid-cols-4;
+
+    }
+
+    /* ==========================================================
+       Label
+    ========================================================== */
+
+    .form-label {
+
+        @apply mb-2
+               block
+               text-sm
+               font-medium
+               text-slate-700;
+
+    }
+
+    .form-required {
+
+        @apply text-red-500
+               ml-1;
+
+    }
+
+    .form-helper {
+
+        @apply mt-2
+               text-xs
+               text-slate-500;
+
+    }
+
+    .form-error {
+
+        @apply mt-2
+               text-sm
+               text-red-600;
+
+    }
+
+    /* ==========================================================
+       Base Input
+    ========================================================== */
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+
+        @apply w-full
+               rounded-xl
+               border
+               border-slate-300
+               bg-white
+               px-4
+               py-2.5
+               text-sm
+               text-slate-700
+               placeholder:text-slate-400
+               transition-all
+               duration-200
+               focus:border-cyan-500
+               focus:ring-2
+               focus:ring-cyan-500/20
+               focus:outline-none;
+
+    }
+
+    /* ==========================================================
+       Textarea
+    ========================================================== */
+
+    .form-textarea {
+
+        @apply min-h-32
+               resize-y;
+
+    }
+
+    /* ==========================================================
+       Readonly
+    ========================================================== */
+
+    .form-input[readonly],
+    .form-select[readonly],
+    .form-textarea[readonly] {
+
+        @apply bg-slate-100
+               cursor-not-allowed;
+
+    }
+
+    /* ==========================================================
+       Disabled
+    ========================================================== */
+
+    .form-input:disabled,
+    .form-select:disabled,
+    .form-textarea:disabled {
+
+        @apply bg-slate-100
+               opacity-70
+               cursor-not-allowed;
+
+    }
+
+    /* ==========================================================
+       Validation
+    ========================================================== */
+
+    .form-valid {
+
+        @apply border-emerald-500
+               focus:border-emerald-500
+               focus:ring-emerald-500/20;
+
+    }
+
+    .form-invalid {
+
+        @apply border-red-500
+               focus:border-red-500
+               focus:ring-red-500/20;
+
+    }
+
+    /* ==========================================================
+       Input Group
+    ========================================================== */
+
+    .input-group {
+
+        @apply flex
+               rounded-xl
+               overflow-hidden
+               border
+               border-slate-300
+               bg-white;
+
+    }
+
+    .input-group-text {
+
+        @apply inline-flex
+               items-center
+               px-4
+               bg-slate-100
+               text-slate-500
+               border-r
+               border-slate-300;
+
+    }
+
+    .input-group .form-input {
+
+        @apply border-0
+               rounded-none
+               shadow-none
+               focus:ring-0;
+
+    }
+
+    /* ==========================================================
+       Checkbox
+    ========================================================== */
+
+    .form-checkbox {
+
+        @apply h-5
+               w-5
+               rounded
+               border-slate-300
+               text-cyan-600
+               focus:ring-cyan-500;
+
+    }
+
+    /* ==========================================================
+       Radio
+    ========================================================== */
+
+    .form-radio {
+
+        @apply h-5
+               w-5
+               border-slate-300
+               text-cyan-600
+               focus:ring-cyan-500;
+
+    }
+
+    /* ==========================================================
+       Checkbox Group
+    ========================================================== */
+
+    .checkbox-group {
+
+        @apply flex
+               items-center
+               gap-3;
+
+    }
+
+    /* ==========================================================
+       Switch
+    ========================================================== */
+
+    .form-switch {
+
+        @apply relative
+               inline-flex
+               h-6
+               w-11
+               cursor-pointer
+               rounded-full
+               bg-slate-300
+               transition-colors
+               duration-200;
+
+    }
+
+    .form-switch::after {
+
+        content: "";
+
+        @apply absolute
+               left-1
+               top-1
+               h-4
+               w-4
+               rounded-full
+               bg-white
+               transition-all;
+
+    }
+
+    .form-switch.active {
+
+        @apply bg-cyan-600;
+
+    }
+
+    .form-switch.active::after {
+
+        @apply translate-x-5;
+
+    }
+
+    /* ==========================================================
+       File Upload
+    ========================================================== */
+
+    .form-file {
+
+        @apply block
+               w-full
+               rounded-xl
+               border
+               border-dashed
+               border-slate-300
+               bg-slate-50
+               p-6
+               text-center
+               text-sm
+               text-slate-500
+               cursor-pointer
+               transition-all
+               hover:border-cyan-500
+               hover:bg-cyan-50;
+
+    }
+
+    /* ==========================================================
+       Search Box
+    ========================================================== */
+
+    .search-box {
+
+        @apply relative;
+
+    }
+
+    .search-box svg {
+
+        @apply absolute
+               left-4
+               top-1/2
+               -translate-y-1/2
+               text-slate-400;
+
+    }
+
+    .search-box .form-input {
+
+        @apply pl-11;
+
+    }
+
+    /* ==========================================================
+       Floating Label (Optional)
+    ========================================================== */
+
+    .floating-group {
+
+        @apply relative;
+
+    }
+
+    .floating-group .form-input {
+
+        @apply pt-6
+               pb-2;
+
+    }
+
+    .floating-label {
+
+        @apply absolute
+               left-4
+               top-2
+               text-xs
+               text-slate-500;
+
+    }
+
+}

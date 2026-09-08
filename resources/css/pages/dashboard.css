@@ -1,0 +1,61 @@
+/* Dashboard custom styles */
+/* Dashboard custom styles to align with login theme */
+
+/* Hero header for dashboard using existing asset */
+.content-header {
+    background-image: linear-gradient(90deg, rgba(3,37,65,0.9) 0%, rgba(3,37,65,0.75) 50%), url('/images/login/forklift-background.png');
+    background-size: cover;
+    background-position: center;
+    padding: 28px;
+    border-radius: 12px;
+    color: #ffffff;
+    margin-bottom: 18px;
+}
+
+.content-header .breadcrumb, .content-header .page-subtitle {
+    color: rgba(255,255,255,0.85);
+}
+
+/* Small boxes (summary cards) */
+.small-box {
+    border-radius: 12px;
+    padding: 18px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+}
+.small-box .inner h3 { font-size: 28px; font-weight: 700; }
+.small-box .inner p { font-weight: 700; }
+.small-box .icon { position: absolute; right: 18px; top: 18px; font-size: 42px; opacity: .18; }
+.small-box .small-box-footer { display:block; padding-top:10px; color: rgba(255,255,255,0.95); }
+
+/* Accent colors */
+.small-box.bg-info { background: linear-gradient(135deg,#0ea5e9,#0284c7); }
+.small-box.bg-success { background: linear-gradient(135deg,#10b981,#059669); }
+.small-box.bg-primary { background: linear-gradient(135deg,#3b82f6,#1e40af); }
+.small-box.bg-warning { background: linear-gradient(135deg,#f59e0b,#f97316); }
+
+/* Cards */
+.card.card-outline { border-radius: 12px; overflow: hidden; }
+.card.card-outline .card-header { background: transparent; border-bottom: 0; }
+.card.card-outline .card-body { background: #ffffff; }
+
+/* Table */
+.table thead.thead-light { background: rgba(15,23,42,0.03); }
+.table tbody tr td { vertical-align: middle; }
+
+/* Sidebar refinements (align with login dark-blue theme) */
+.main-sidebar { background: linear-gradient(180deg,#06243a 0%, #0a3550 100%); }
+.main-sidebar .brand-link { background: transparent; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.main-sidebar .nav-link { color: rgba(255,255,255,0.9); }
+.main-sidebar .nav-header, .main-sidebar .brand-text { color: rgba(255,255,255,0.7); }
+.main-sidebar .nav-link.active { background: rgba(255,255,255,0.06); color: #fff; border-radius: 8px; }
+
+/* Footer */
+.main-footer { background: transparent; color: rgba(0,0,0,0.6); }
+
+/* Responsive tweaks */
+@media (max-width: 991px) {
+    .content-header { padding: 16px; border-radius: 8px; }
+}
+

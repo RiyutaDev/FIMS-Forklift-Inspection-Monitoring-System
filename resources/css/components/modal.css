@@ -1,0 +1,295 @@
+/*
+|--------------------------------------------------------------------------
+| FIMS - Modal Component
+|--------------------------------------------------------------------------
+|
+| Enterprise Content Modal
+|
+| - Responsive
+| - Sticky Header
+| - Sticky Footer
+| - Scrollable Body
+| - Multiple Sizes
+| - Fullscreen
+|
+*/
+
+@layer components {
+
+    /* ==========================================================
+       Backdrop
+    ========================================================== */
+
+    .modal {
+
+        @apply fixed
+               inset-0
+               z-[100]
+               hidden
+               items-center
+               justify-center
+               bg-slate-900/40
+               backdrop-blur-sm
+               p-4;
+
+    }
+
+    .modal.show {
+
+        @apply flex;
+
+    }
+
+    /* ==========================================================
+       Dialog
+    ========================================================== */
+
+    .modal-dialog {
+
+        @apply flex
+               max-h-[90vh]
+               w-full
+               flex-col
+               overflow-hidden
+               rounded-2xl
+               bg-white
+               shadow-2xl;
+
+    }
+
+    /* ==========================================================
+       Sizes
+    ========================================================== */
+
+    .modal-xs {
+
+        @apply max-w-sm;
+
+    }
+
+    .modal-sm {
+
+        @apply max-w-lg;
+
+    }
+
+    .modal-md {
+
+        @apply max-w-2xl;
+
+    }
+
+    .modal-lg {
+
+        @apply max-w-4xl;
+
+    }
+
+    .modal-xl {
+
+        @apply max-w-6xl;
+
+    }
+
+    .modal-2xl {
+
+        @apply max-w-7xl;
+
+    }
+
+    .modal-full {
+
+        @apply h-full
+               max-h-full
+               max-w-full
+               rounded-none;
+
+    }
+
+    /* ==========================================================
+       Header
+    ========================================================== */
+
+    .modal-header {
+
+        @apply sticky
+               top-0
+               z-10
+               flex
+               items-center
+               justify-between
+               border-b
+               border-slate-200
+               bg-white
+               px-6
+               py-4;
+
+    }
+
+    .modal-title {
+
+        @apply text-lg
+               font-semibold
+               text-slate-800;
+
+    }
+
+    .modal-subtitle {
+
+        @apply mt-1
+               text-sm
+               text-slate-500;
+
+    }
+
+    /* ==========================================================
+       Close Button
+    ========================================================== */
+
+    .modal-close {
+
+        @apply flex
+               h-10
+               w-10
+               items-center
+               justify-center
+               rounded-xl
+               text-slate-500
+               transition-all
+               duration-200;
+
+    }
+
+    .modal-close:hover {
+
+        @apply bg-slate-100
+               text-slate-700;
+
+    }
+
+    /* ==========================================================
+       Body
+    ========================================================== */
+
+    .modal-body {
+
+        @apply flex-1
+               overflow-y-auto
+               px-6
+               py-5;
+
+    }
+
+    /* ==========================================================
+       Footer
+    ========================================================== */
+
+    .modal-footer {
+
+        @apply sticky
+               bottom-0
+               flex
+               items-center
+               justify-end
+               gap-3
+               border-t
+               border-slate-200
+               bg-white
+               px-6
+               py-4;
+
+    }
+
+    /* ==========================================================
+       Center
+    ========================================================== */
+
+    .modal-center {
+
+        @apply text-center;
+
+    }
+
+    /* ==========================================================
+       Responsive
+    ========================================================== */
+
+    @media (max-width: 768px) {
+
+        .modal {
+
+            @apply p-2;
+
+        }
+
+        .modal-dialog {
+
+            @apply h-full
+                   max-h-full
+                   rounded-none;
+
+        }
+
+        .modal-header,
+        .modal-body,
+        .modal-footer {
+
+            @apply px-4;
+
+        }
+
+    }
+
+}
+.inspection-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(15, 23, 42, 0.55);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.inspection-modal-content {
+    width: 100%;
+    max-width: 480px;
+    background: #fff;
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+
+.inspection-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.inspection-modal-header h3 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.inspection-modal-header p {
+    margin: 5px 0 0;
+    color: #64748b;
+}
+
+.inspection-modal-close {
+    border: 0;
+    background: transparent;
+    font-size: 26px;
+    cursor: pointer;
+    color: #64748b;
+}
+
+.inspection-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 24px;
+}

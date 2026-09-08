@@ -1,0 +1,25 @@
+/* --------------------------------------------------------------------------
+ | Imports (must come before other at-rules)
+ * -------------------------------------------------------------------------- */
+
+@import "./base.css";
+
+/* Components */
+@import "./components/button.css";
+@import "./components/card.css";
+@import "./components/form.css";
+@import "./components/table.css";
+@import "./components/badge.css";
+@import "./components/modal.css";
+@import "./components/sidebar.css";
+@import "./components/navbar.css";
+@import "./components/alert.css";
+
+/* Pages */
+@import "./pages/login.css";
+/* @import "./pages/dashboard.css"; */
+@import "./pages/inspection.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
