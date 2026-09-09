@@ -895,10 +895,73 @@
 
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 @stack('scripts')
 
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    document.querySelectorAll('.delete-forklift-form').forEach(function (form) {
+
+        form.addEventListener('submit', function (event) {
+
+            event.preventDefault();
+
+            const forkliftCode = form.dataset.forkliftCode;
+
+            Swal.fire({
+                title: 'Hapus Forklift?',
+                html: `
+                    Anda yakin ingin menghapus forklift
+                    <strong>${forkliftCode}</strong>?
+                    <br><br>
+                    <small class="text-muted">
+                        Data forklift akan dihapus dari daftar master.
+                    </small>
+                `,
+                icon: 'warning',
+
+                showCancelButton: true,
+
+                confirmButtonText: '<i class="fas fa-trash mr-1"></i> Ya, Hapus',
+                cancelButtonText: '<i class="fas fa-times mr-1"></i> Batal',
+
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+
+                reverseButtons: true,
+
+                focusCancel: true
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    Swal.fire({
+                        title: 'Menghapus...',
+                        text: 'Mohon tunggu sebentar.',
+                        icon: 'info',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false,
+
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    form.submit();
+                }
+
+            });
+
+        });
+
+    });
+
+});
+</script>
 </body>
 
 </html>

@@ -1,153 +1,249 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cetak QR Code - {{ $forklift->forklift_code }}</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        QR Code - {{ $forklift->forklift_code }}
+    </title>
+
     <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            background-color: #f4f6f9;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #333;
+            margin: 0;
+            padding: 30px;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f9;
         }
 
-        /* Tombol Aksi (Hanya muncul di layar, disembunyikan saat print) */
-        .no-print {
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        /* Desain Kartu / Lembar Stiker QR Code */
-        .qr-label-card {
-            width: 380px;
-            max-width: 100%;
-            margin: 30px auto;
-            background: #ffffff;
-            border: 2px dashed #007bff;
+        .print-container {
+            width: 100%;
+            max-width: 420px;
+            margin: 0 auto;
+            background: white;
+            border: 2px solid #222;
             border-radius: 12px;
-            padding: 20px;
+            padding: 25px;
             text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
         }
 
-        .company-header {
-            font-size: 13px;
-            font-weight: 700;
-            color: #6c757d;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .company-title {
+            font-size: 18px;
+            font-weight: bold;
             margin-bottom: 5px;
         }
 
-        .unit-code {
-            font-size: 26px;
-            font-weight: 800;
-            color: #007bff;
-            margin-bottom: 2px;
-        }
-
-        .unit-spec {
+        .system-title {
             font-size: 13px;
-            color: #495057;
-            margin-bottom: 15px;
+            color: #666;
+            margin-bottom: 20px;
         }
 
         .qr-wrapper {
-            background: #fff;
-            padding: 12px;
-            display: inline-block;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            margin-bottom: 15px;
+            margin: 20px auto;
         }
 
-        /* QR Code Placeholder / Real Image */
         .qr-wrapper img {
-            width: 200px;
-            height: 200px;
+            width: 260px;
+            height: 260px;
             object-fit: contain;
         }
 
-        .scan-instruction {
+        .forklift-code {
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-top: 10px;
+        }
+
+        .forklift-info {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-top: 10px;
+        }
+
+        .scan-info {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
             font-size: 12px;
-            font-weight: 600;
-            color: #dc3545;
-            background: #f8d7da;
-            padding: 6px 10px;
-            border-radius: 4px;
+            color: #555;
+        }
+
+        .token {
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 10px;
+            color: #777;
+            margin-top: 10px;
+        }
+
+        .actions {
+            margin-top: 25px;
+        }
+
+        .btn {
             display: inline-block;
-            margin-bottom: 10px;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
         }
 
-        .meta-info {
-            font-size: 11px;
-            color: #6c757d;
-            border-top: 1px solid #e9ecef;
-            padding-top: 10px;
-            margin-top: 5px;
-            text-align: left;
+        .btn-print {
+            background: #007bff;
+            color: white;
         }
 
-        /* Pengaturan Khusus Saat Dicetak (Print Media) */
+        .btn-close {
+            background: #6c757d;
+            color: white;
+            margin-left: 5px;
+        }
+
         @media print {
+
             body {
-                background-color: #ffffff;
+                background: white;
+                padding: 0;
             }
-            .no-print {
-                display: none !important;
-            }
-            .qr-label-card {
-                margin: 0 auto;
-                box-shadow: none;
-                border: 2px solid #000;
+
+            .print-container {
+                max-width: none;
+                border: 2px solid #222;
+                border-radius: 0;
+                margin: 0;
                 page-break-inside: avoid;
             }
+
+            .actions {
+                display: none;
+            }
+
         }
+
     </style>
+
 </head>
-<body onload="window.print()">
 
-    <div class="container no-print">
-        <div class="row">
-            <div class="col-12 text-center">
-                <button onclick="window.print()" class="btn btn-primary px-4 font-weight-bold shadow-sm">
-                    <i class="fas fa-print mr-2"></i> Cetak Stiker QR
-                </button>
-                <a href="{{ route('master.forklifts.show', $forklift->id) }}" class="btn btn-secondary px-4 ml-2 shadow-sm">
-                    <i class="fas fa-arrow-left mr-2"></i> Kembali ke Detail
-                </a>
-            </div>
-        </div>
+<body>
+
+<div class="print-container">
+
+    <div class="company-title">
+        KKP FORKLIFT
     </div>
 
-    <div class="qr-label-card">
-        <div class="company-header">
-            <i class="fas fa-shield-alt mr-1"></i> FIMS - Forklift Inspection System
-        </div>
-        
-        <div class="unit-code">{{ $forklift->forklift_code }}</div>
-        <div class="unit-spec">
-            <strong>{{ $forklift->brand }}</strong> - {{ $forklift->model }} (Cap: {{ $forklift->capacity }} Ton)
-        </div>
-
-        <div class="qr-wrapper">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ route('inspector.inspection.create', ['token' => $forklift->qr_token ?? $forklift->id]) }}" alt="QR Code Unit {{ $forklift->forklift_code }}">
-        </div>
-
-        <div>
-            <span class="scan-instruction">
-                <i class="fas fa-qrcode mr-1"></i> SCAN UNTUK INSPEKSI HARIAN
-            </span>
-        </div>
-
-        <div class="meta-info d-flex justify-content-between">
-            <span><strong>Lokasi:</strong> {{ $forklift->location->location_name ?? '-' }}</span>
-            <span><strong>Token:</strong> {{ substr($forklift->qr_token ?? 'TOKEN-FIMS', 0, 8) }}...</span>
-        </div>
+    <div class="system-title">
+        Forklift Inspection & Monitoring System
     </div>
+
+
+    {{-- =========================================================
+         QR CODE
+    ========================================================== --}}
+
+    <div class="qr-wrapper">
+
+        <img
+            src="{{ $forklift->qr_code_image_url }}"
+            alt="QR Code {{ $forklift->forklift_code }}"
+        >
+
+    </div>
+
+
+    {{-- =========================================================
+         IDENTITAS FORKLIFT
+    ========================================================== --}}
+
+    <div class="forklift-code">
+        {{ $forklift->forklift_code }}
+    </div>
+
+    <div class="forklift-info">
+
+        <strong>
+            {{ $forklift->brand }}
+            {{ $forklift->model }}
+        </strong>
+
+        <br>
+
+        Kapasitas:
+        {{ $forklift->capacity }}
+        Ton
+
+        <br>
+
+        Area:
+        {{ $forklift->location?->location_name ?? '-' }}
+
+    </div>
+
+
+    {{-- =========================================================
+         PETUNJUK
+    ========================================================== --}}
+
+    <div class="scan-info">
+
+        <strong>
+            SCAN QR CODE UNTUK INSPEKSI
+        </strong>
+
+        <br>
+
+        Gunakan kamera smartphone untuk
+        membuka halaman inspeksi forklift.
+
+        <div class="token">
+
+            Token:
+            {{ $forklift->qr_token }}
+
+        </div>
+
+    </div>
+
+
+    {{-- =========================================================
+         BUTTON
+    ========================================================== --}}
+
+    <div class="actions">
+
+        <button
+            onclick="window.print()"
+            class="btn btn-print"
+        >
+            🖨 Cetak QR
+        </button>
+
+        <button
+            onclick="window.close()"
+            class="btn btn-close"
+        >
+            Tutup
+        </button>
+
+    </div>
+
+</div>
 
 </body>
+
 </html>

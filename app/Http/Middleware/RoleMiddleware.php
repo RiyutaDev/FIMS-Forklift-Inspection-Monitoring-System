@@ -24,7 +24,6 @@ class RoleMiddleware
         */
 
         if (!auth()->check()) {
-
             return redirect()
                 ->route('login')
                 ->with('error', 'Silakan login terlebih dahulu.');
@@ -44,10 +43,6 @@ class RoleMiddleware
         |--------------------------------------------------------------------------
         | CEK AKUN AKTIF
         |--------------------------------------------------------------------------
-        |
-        | Model User kamu menggunakan kolom "is_active",
-        | bukan "status".
-        |
         */
 
         if (!$user->is_active) {
@@ -55,6 +50,7 @@ class RoleMiddleware
             auth()->logout();
 
             $request->session()->invalidate();
+
             $request->session()->regenerateToken();
 
             return redirect()
@@ -67,15 +63,6 @@ class RoleMiddleware
         |--------------------------------------------------------------------------
         | AMBIL ROLE USER
         |--------------------------------------------------------------------------
-        |
-        | Struktur database:
-        |
-        | users.role_id
-        |       ↓
-        | roles.id
-        |       ↓
-        | roles.role_name
-        |
         */
 
         $userRole = $user->role?->role_name;
@@ -89,11 +76,64 @@ class RoleMiddleware
 
         if (!$userRole) {
 
-            abort(
-                403,
-                'Role pengguna tidak ditemukan.'
-            );
+            auth()->logout();
+
+            $request->session()->invalidate();
+
+            $request->session()->regenerateToken();
+
+            return redirect()
+                ->route('login')
+                ->with(
+                    'error',
+                    'Role pengguna tidak ditemukan. Silakan hubungi Administrator.'
+                );
         }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | NORMALISASI ROLE
+        |--------------------------------------------------------------------------
+        |
+        | Admin dan Administrator dianggap sebagai role yang sama.
+        | Driver dan Operator juga dianggap sebagai role yang sama.
+        |
+        */
+
+        $normalizedUserRole = match ($userRole) {
+
+            'Administrator' => 'Admin',
+
+            'Operator' => 'Driver',
+
+            default => $userRole,
+
+        };
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | NORMALISASI ROLE YANG DIMINTA ROUTE
+        |--------------------------------------------------------------------------
+        */
+
+        $normalizedRoles = collect($roles)
+            ->map(function ($role) {
+
+                return match ($role) {
+
+                    'Administrator' => 'Admin',
+
+                    'Operator' => 'Driver',
+
+                    default => $role,
+
+                };
+
+            })
+            ->values()
+            ->all();
 
 
         /*
@@ -102,9 +142,10 @@ class RoleMiddleware
         |--------------------------------------------------------------------------
         */
 
-        if (in_array($userRole, $roles, true)) {
+        if (in_array($normalizedUserRole, $normalizedRoles, true)) {
 
             return $next($request);
+
         }
 
 

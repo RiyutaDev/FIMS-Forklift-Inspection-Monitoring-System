@@ -98,7 +98,7 @@ class UserController extends Controller
 
         // 3. Hash Password
         $validated['password'] = Hash::make($request->password);
-        $validated['is_active'] = $request->boolean('is_active', true);
+        $validated['is_active'] = $request->boolean('is_active');
 
         // 4. Simpan User Baru
         $user = User::create($validated);
@@ -108,7 +108,7 @@ class UserController extends Controller
         ActivityLog::create([
             'user_id'     => $admin->id,
             'module'      => 'Master User',
-            'action'      => 'Create User',
+            'action'      => 'Create',
             'description' => "Admin {$admin->name} membuat akun pengguna baru: {$user->name} ({$user->employee_number}).",
             'ip_address'  => $request->ip(),
         ]);
@@ -178,19 +178,22 @@ class UserController extends Controller
             unset($validated['password']);
         }
 
-        $validated['is_active'] = $request->boolean('is_active', true);
+        // Status akun
+        $validated['is_active'] = $request->boolean('is_active');
 
         // 4. Update Data User
         $user->update($validated);
 
-        // 5. Catat Activity Log (BR-024)
+        // 5. Catat Activity Log
         $admin = Auth::user();
+
         ActivityLog::create([
             'user_id'     => $admin->id,
             'module'      => 'Master User',
-            'action'      => 'Update User',
+            'action'      => 'Update',
             'description' => "Admin {$admin->name} memperbarui data pengguna: {$user->name} ({$user->employee_number}).",
             'ip_address'  => $request->ip(),
+            'user_agent'  => $request->userAgent(),
         ]);
 
         return redirect()->route('master.users.index')
@@ -201,29 +204,38 @@ class UserController extends Controller
      * Menghapus atau menonaktifkan pengguna.
      */
     public function destroy(Request $request, User $user)
-    {
-        // Mencegah Admin menghapus akunnya sendiri yang sedang dipakai
-        if ($user->id === Auth::id()) {
-            return redirect()->back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri yang sedang aktif.');
-        }
-
-        $admin = Auth::user();
-        $userName = $user->name;
-        $employeeNumber = $user->employee_number;
-
-        // Lakukan Soft Delete
-        $user->delete();
-
-        // Catat Activity Log (BR-024)
-        ActivityLog::create([
-            'user_id'     => $admin->id,
-            'module'      => 'Master User',
-            'action'      => 'Delete User',
-            'description' => "Admin {$admin->name} menghapus pengguna: {$userName} ({$employeeNumber}).",
-            'ip_address'  => $request->ip(),
-        ]);
-
-        return redirect()->route('master.users.index')
-            ->with('success', "Pengguna {$userName} berhasil dihapus.");
+{
+    // 1. Mencegah Admin menghapus akunnya sendiri
+    if ($user->id === Auth::id()) {
+        return redirect()->back()->with(
+            'error',
+            'Anda tidak dapat menghapus akun Anda sendiri yang sedang aktif.'
+        );
     }
+
+    // 2. Simpan informasi sebelum user dihapus permanen
+    $admin = Auth::user();
+    $userName = $user->name;
+    $employeeNumber = $user->employee_number;
+
+    // 3. Hapus user secara PERMANEN
+    $user->forceDelete();
+
+    // 4. Catat Activity Log
+    ActivityLog::create([
+        'user_id'     => $admin->id,
+        'module'      => 'Master User',
+        'action'      => 'Delete',
+        'description' => "Admin {$admin->name} menghapus pengguna: {$userName} ({$employeeNumber}).",
+        'ip_address'  => $request->ip(),
+        'user_agent'  => $request->userAgent(),
+    ]);
+
+    // 5. Kembali ke daftar user
+    return redirect()->route('master.users.index')
+        ->with(
+            'success',
+            "Pengguna {$userName} berhasil dihapus secara permanen."
+        );
+}
 }

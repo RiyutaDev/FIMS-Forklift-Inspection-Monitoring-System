@@ -158,13 +158,22 @@
                                             <i class="fas fa-edit"></i>
                                         </a>
 
-                                        <form action="{{ route('master.forklifts.destroy', $forklift->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus unit forklift ini?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-xs btn-danger" title="Hapus Data">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </form>
+                                        <form action="{{ route('master.forklifts.destroy', $forklift) }}"
+                                                method="POST"
+                                                class="delete-forklift-form d-inline"
+                                                data-forklift-code="{{ $forklift->forklift_code }}"
+                                            >
+                                                @csrf
+                                                @method('DELETE')
+
+                                                <button
+                                                    type="submit"
+                                                    class="btn btn-danger btn-sm"
+                                                    title="Hapus Forklift"
+                                                >
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
                                     </td>
                                 </tr>
                             @empty

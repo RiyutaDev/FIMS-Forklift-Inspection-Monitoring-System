@@ -189,52 +189,56 @@ Route::middleware(['auth'])->group(function () {
 
                 });
 
+        /*
+        |--------------------------------------------------------------------------
+        | Forklifts Management
+        |--------------------------------------------------------------------------
+        */
 
-            /*
-            |--------------------------------------------------------------------------
-            | Forklifts Management
-            |--------------------------------------------------------------------------
-            */
+        Route::controller(ForkliftController::class)
+            ->prefix('forklifts')
+            ->name('forklifts.')
+            ->group(function () {
 
-            Route::controller(ForkliftController::class)
-                ->prefix('forklifts')
-                ->name('forklifts.')
-                ->group(function () {
+                // Index
+                Route::get('/', 'index')
+                    ->name('index');
 
-                    Route::get('/', 'index')
-                        ->name('index');
+                // Create
+                Route::get('/create', 'create')
+                    ->name('create');
 
-                    Route::get('/create', 'create')
-                        ->name('create');
+                // Store
+                Route::post('/', 'store')
+                    ->name('store');
 
-                    Route::post('/', 'store')
-                        ->name('store');
+                // Restore forklift yang pernah dihapus
+                Route::post('/{forklift}/restore', 'restore')
+                    ->name('restore');
 
-                    Route::get('/{forklift}', 'show')
-                        ->name('show');
+                // QR Code
+                Route::post('/{forklift}/regenerate-qr', 'regenerateQr')
+                    ->name('regenerate_qr');
 
-                    Route::get('/{forklift}/edit', 'edit')
-                        ->name('edit');
+                Route::get('/{forklift}/print-qr', 'printQr')
+                    ->name('print_qr');
 
-                    Route::put('/{forklift}', 'update')
-                        ->name('update');
+                // Edit
+                Route::get('/{forklift}/edit', 'edit')
+                    ->name('edit');
 
-                    Route::delete('/{forklift}', 'destroy')
-                        ->name('destroy');
+                // Update
+                Route::put('/{forklift}', 'update')
+                    ->name('update');
 
-                    // QR Code
-                    Route::post(
-                        '/{forklift}/regenerate-qr',
-                        'regenerateQr'
-                    )->name('regenerate_qr');
+                // Delete
+                Route::delete('/{forklift}', 'destroy')
+                    ->name('destroy');
 
-                    Route::get(
-                        '/{forklift}/print-qr',
-                        'printQr'
-                    )->name('print_qr');
-
-                });
-
+                // Show — letakkan paling bawah
+                Route::get('/{forklift}', 'show')
+                    ->name('show');
+            });
 
             /*
             |--------------------------------------------------------------------------
