@@ -22,17 +22,13 @@ use App\Http\Controllers\Web\Master\InspectionItemController;
 */
 
 Route::middleware('guest')->group(function () {
-
     Route::controller(AuthController::class)->group(function () {
-
         Route::get('/login', 'showLoginForm')
             ->name('login');
 
         Route::post('/login', 'login')
             ->name('login.process');
-
     });
-
 });
 
 
@@ -53,8 +49,7 @@ Route::post('/logout', [AuthController::class, 'logout'])
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth'])->group(function () {
-
+Route::middleware('auth')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
@@ -66,7 +61,8 @@ Route::middleware(['auth'])->group(function () {
     |
     */
 
-    Route::redirect('/', '/dashboard');
+    Route::redirect('/', '/dashboard')
+        ->name('root');
 
 
     /*
@@ -141,7 +137,6 @@ Route::middleware(['auth'])->group(function () {
         ->name('dashboard.driver');
 
 
-
     /*
     |--------------------------------------------------------------------------
     | MASTER DATA
@@ -153,7 +148,6 @@ Route::middleware(['auth'])->group(function () {
         ->prefix('master')
         ->name('master.')
         ->group(function () {
-
 
             /*
             |--------------------------------------------------------------------------
@@ -175,9 +169,6 @@ Route::middleware(['auth'])->group(function () {
                     Route::post('/', 'store')
                         ->name('store');
 
-                    Route::get('/{user}', 'show')
-                        ->name('show');
-
                     Route::get('/{user}/edit', 'edit')
                         ->name('edit');
 
@@ -187,58 +178,53 @@ Route::middleware(['auth'])->group(function () {
                     Route::delete('/{user}', 'destroy')
                         ->name('destroy');
 
+                    Route::get('/{user}', 'show')
+                        ->name('show');
                 });
 
-        /*
-        |--------------------------------------------------------------------------
-        | Forklifts Management
-        |--------------------------------------------------------------------------
-        */
 
-        Route::controller(ForkliftController::class)
-            ->prefix('forklifts')
-            ->name('forklifts.')
-            ->group(function () {
+            /*
+            |--------------------------------------------------------------------------
+            | Forklifts Management
+            |--------------------------------------------------------------------------
+            */
 
-                // Index
-                Route::get('/', 'index')
-                    ->name('index');
+            Route::controller(ForkliftController::class)
+                ->prefix('forklifts')
+                ->name('forklifts.')
+                ->group(function () {
 
-                // Create
-                Route::get('/create', 'create')
-                    ->name('create');
+                    Route::get('/', 'index')
+                        ->name('index');
 
-                // Store
-                Route::post('/', 'store')
-                    ->name('store');
+                    Route::get('/create', 'create')
+                        ->name('create');
 
-                // Restore forklift yang pernah dihapus
-                Route::post('/{forklift}/restore', 'restore')
-                    ->name('restore');
+                    Route::post('/', 'store')
+                        ->name('store');
 
-                // QR Code
-                Route::post('/{forklift}/regenerate-qr', 'regenerateQr')
-                    ->name('regenerate_qr');
+                    Route::post('/{forklift}/restore', 'restore')
+                        ->name('restore');
 
-                Route::get('/{forklift}/print-qr', 'printQr')
-                    ->name('print_qr');
+                    Route::post('/{forklift}/regenerate-qr', 'regenerateQr')
+                        ->name('regenerate_qr');
 
-                // Edit
-                Route::get('/{forklift}/edit', 'edit')
-                    ->name('edit');
+                    Route::get('/{forklift}/print-qr', 'printQr')
+                        ->name('print_qr');
 
-                // Update
-                Route::put('/{forklift}', 'update')
-                    ->name('update');
+                    Route::get('/{forklift}/edit', 'edit')
+                        ->name('edit');
 
-                // Delete
-                Route::delete('/{forklift}', 'destroy')
-                    ->name('destroy');
+                    Route::put('/{forklift}', 'update')
+                        ->name('update');
 
-                // Show — letakkan paling bawah
-                Route::get('/{forklift}', 'show')
-                    ->name('show');
-            });
+                    Route::delete('/{forklift}', 'destroy')
+                        ->name('destroy');
+
+                    Route::get('/{forklift}', 'show')
+                        ->name('show');
+                });
+
 
             /*
             |--------------------------------------------------------------------------
@@ -251,8 +237,21 @@ Route::middleware(['auth'])->group(function () {
                 ->name('inspection-items.')
                 ->group(function () {
 
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Daftar Item Ceklis
+                    |--------------------------------------------------------------------------
+                    */
+
                     Route::get('/', 'index')
                         ->name('index');
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Tambah Item Ceklis
+                    |--------------------------------------------------------------------------
+                    */
 
                     Route::get('/create', 'create')
                         ->name('create');
@@ -260,22 +259,44 @@ Route::middleware(['auth'])->group(function () {
                     Route::post('/', 'store')
                         ->name('store');
 
-                    Route::get('/{inspectionItem}', 'show')
-                        ->name('show');
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Edit Item Ceklis
+                    |--------------------------------------------------------------------------
+                    */
 
                     Route::get('/{inspectionItem}/edit', 'edit')
+                        ->whereNumber('inspectionItem')
                         ->name('edit');
 
                     Route::put('/{inspectionItem}', 'update')
+                        ->whereNumber('inspectionItem')
                         ->name('update');
 
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Hapus Item Ceklis
+                    |--------------------------------------------------------------------------
+                    */
+
                     Route::delete('/{inspectionItem}', 'destroy')
+                        ->whereNumber('inspectionItem')
                         ->name('destroy');
 
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Detail Item Ceklis
+                    |--------------------------------------------------------------------------
+                    */
+
+                    Route::get('/{inspectionItem}', 'show')
+                        ->whereNumber('inspectionItem')
+                        ->name('show');
                 });
-
         });
-
 
 
     /*
@@ -287,7 +308,6 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('inspections')
         ->name('inspections.')
         ->group(function () {
-
 
             /*
             |--------------------------------------------------------------------------
@@ -304,7 +324,6 @@ Route::middleware(['auth'])->group(function () {
 
                     Route::get('/show/{inspection}', 'show')
                         ->name('show');
-
                 });
 
 
@@ -312,13 +331,6 @@ Route::middleware(['auth'])->group(function () {
             |--------------------------------------------------------------------------
             | ADMIN - CHANGE INSPECTION STATUS
             |--------------------------------------------------------------------------
-            |
-            | Admin dapat mengubah:
-            | Draft
-            | Submitted
-            | Rejected
-            | Approved
-            |
             */
 
             Route::middleware(['role:Admin'])
@@ -329,7 +341,6 @@ Route::middleware(['auth'])->group(function () {
                         '/{inspection}/status',
                         'updateStatus'
                     )->name('update-status');
-
                 });
 
 
@@ -352,11 +363,8 @@ Route::middleware(['auth'])->group(function () {
 
                     Route::post('/', 'store')
                         ->name('store');
-
                 });
-
         });
-
 
 
     /*
@@ -387,9 +395,7 @@ Route::middleware(['auth'])->group(function () {
                 '/{inspection}/reject',
                 'reject'
             )->name('reject');
-
         });
-
 
 
     /*
@@ -417,9 +423,7 @@ Route::middleware(['auth'])->group(function () {
                 '/summary/pdf',
                 'exportSummaryPdf'
             )->name('export_summary_pdf');
-
         });
-
 
 
     /*
@@ -437,7 +441,5 @@ Route::middleware(['auth'])->group(function () {
 
             Route::get('/', 'index')
                 ->name('index');
-
         });
-
 });

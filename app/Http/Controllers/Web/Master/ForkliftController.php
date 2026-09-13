@@ -683,40 +683,155 @@ public function restore(Request $request, $id)
      */
     public function update(Request $request, Forklift $forklift)
     {
-        // 1. Validasi Input Data
+        // =========================================================
+        // 1. VALIDASI INPUT DATA
+        // =========================================================
+
         $validated = $request->validate([
-            'forklift_code'      => ['required', 'string', 'max:30', Rule::unique('forklifts', 'forklift_code')->ignore($forklift->id)],
-            'asset_number'       => ['nullable', 'string', 'max:50'],
-            'location_id'        => ['required', 'exists:locations,id'],
-            'brand'              => ['required', 'string', 'max:50'],
-            'model'              => ['required', 'string', 'max:50'],
-            'serial_number'      => ['nullable', 'string', 'max:50'],
-            'manufacture_year'   => ['nullable', 'integer', 'min:1990', 'max:' . date('Y')],
-            'commissioning_date' => ['nullable', 'date'],
-            'capacity'           => ['required', 'numeric', 'min:0.1', 'max:50'],
-            'fuel_type'          => ['required', 'string', Rule::in(['Electric', 'Diesel', 'LPG'])],
-            'vendor_name'        => ['nullable', 'string', 'max:100'],
-            'is_active'          => ['boolean'],
-            'description'        => ['nullable', 'string', 'max:500'],
+            'forklift_code' => [
+                'required',
+                'string',
+                'max:30',
+                Rule::unique('forklifts', 'forklift_code')
+                    ->ignore($forklift->id),
+            ],
+
+            'asset_number' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            'location_id' => [
+                'required',
+                'exists:locations,id',
+            ],
+
+            'brand' => [
+                'required',
+                'string',
+                'max:50',
+            ],
+
+            'model' => [
+                'required',
+                'string',
+                'max:50',
+            ],
+
+            'serial_number' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            'manufacture_year' => [
+                'nullable',
+                'integer',
+                'min:1990',
+                'max:' . date('Y'),
+            ],
+
+            'commissioning_date' => [
+                'nullable',
+                'date',
+            ],
+
+            'capacity' => [
+                'required',
+                'numeric',
+                'min:0.1',
+                'max:50',
+            ],
+
+            'fuel_type' => [
+                'required',
+                Rule::in(['Electric', 'Diesel', 'LPG']),
+            ],
+
+            'vendor_name' => [
+                'nullable',
+                'string',
+                'max:100',
+            ],
+
+            'is_active' => [
+                'nullable',
+                'boolean',
+            ],
+
+            'description' => [
+                'nullable',
+                'string',
+                'max:500',
+            ],
         ]);
 
-        $validated['is_active'] = $request->boolean('is_active', true);
+        // =========================================================
+        // 2. NORMALISASI DATA
+        // =========================================================
 
-        // 2. Update Data
+        $validated['forklift_code'] = strtoupper(
+            trim($validated['forklift_code'])
+        );
+
+        if (!empty($validated['asset_number'])) {
+            $validated['asset_number'] = strtoupper(
+                trim($validated['asset_number'])
+            );
+        }
+
+        // =========================================================
+        // 3. PARSING STATUS TOGGLE
+        // =========================================================
+        // Jika toggle aktif  => true
+        // Jika toggle mati   => false
+
+        $validated['is_active'] = $request->boolean(
+            'is_active',
+            false
+        );
+
+        // =========================================================
+        // 4. SIMPAN PERUBAHAN DATA
+        // =========================================================
+
         $forklift->update($validated);
 
-        // 3. Catat Activity Log (BR-024)
+        // =========================================================
+        // 5. CATAT ACTIVITY LOG
+        // =========================================================
+
         $admin = Auth::user();
+
+        $statusText = $forklift->is_active
+            ? 'Aktif'
+            : 'Nonaktif';
+
         ActivityLog::create([
             'user_id'     => $admin->id,
             'module'      => 'Master Forklift',
             'action'      => 'Update',
-            'description' => "Admin {$admin->name} memperbarui spesifikasi forklift: {$forklift->forklift_code}.",
+            'subject_type' => Forklift::class,
+            'subject_id'   => $forklift->id,
+            'description' => "Admin {$admin->name} memperbarui data forklift "
+                . "{$forklift->forklift_code}. "
+                . "Status operasional: {$statusText}.",
             'ip_address'  => $request->ip(),
+            'user_agent'  => $request->userAgent(),
         ]);
 
-        return redirect()->route('master.forklifts.index')
-            ->with('success', "Data unit forklift {$forklift->forklift_code} berhasil diperbarui.");
+        // =========================================================
+        // 6. REDIRECT DENGAN NOTIFIKASI
+        // =========================================================
+
+        return redirect()
+            ->route('master.forklifts.index')
+            ->with(
+                'success',
+                "Data forklift {$forklift->forklift_code} berhasil diperbarui. "
+                . "Status sekarang: {$statusText}."
+            );
     }
 
     /**

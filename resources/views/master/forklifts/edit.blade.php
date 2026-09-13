@@ -413,31 +413,45 @@
                     </div>
 
 
-                    {{-- STATUS --}}
+                    {{-- STATUS OPERASIONAL --}}
 
-                    <div class="form-group">
+                    <div class="row">
 
-                        <label class="d-block">
-                            Status Operasional
-                        </label>
+                        <div class="col-md-6 form-group">
 
-                        <div class="custom-control custom-switch mt-2">
-
-                            <input
-                                type="checkbox"
-                                class="custom-control-input"
-                                id="is_active"
-                                name="is_active"
-                                value="1"
-                                {{ old('is_active', $forklift->is_active) ? 'checked' : '' }}
-                            >
-
-                            <label
-                                class="custom-control-label font-weight-normal"
-                                for="is_active"
-                            >
-                                Unit Aktif / Siap Dioperasikan
+                            <label class="d-block">
+                                Status Operasional
                             </label>
+
+                            <div class="custom-control custom-switch mt-2">
+
+                                <input
+                                    type="checkbox"
+                                    class="custom-control-input"
+                                    id="is_active"
+                                    name="is_active"
+                                    value="1"
+                                    {{ old('is_active', $forklift->is_active) ? 'checked' : '' }}
+                                >
+
+                                <label
+                                    class="custom-control-label font-weight-normal"
+                                    for="is_active"
+                                >
+                                    Unit Aktif / Siap Dioperasikan
+                                </label>
+
+                            </div>
+
+                            <small class="form-text text-muted">
+                                Jika dimatikan, unit tidak dapat digunakan untuk inspeksi.
+                            </small>
+
+                            @error('is_active')
+                                <span class="text-danger d-block">
+                                    {{ $message }}
+                                </span>
+                            @enderror
 
                         </div>
 
@@ -496,5 +510,30 @@
 
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@if (session('success'))
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil',
+            text: @json(session('success')),
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#007bff'
+        });
+    </script>
+@endif
+
+@if (session('error'))
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal',
+            text: @json(session('error')),
+            confirmButtonText: 'OK'
+        });
+    </script>
+@endif
 
 @endsection

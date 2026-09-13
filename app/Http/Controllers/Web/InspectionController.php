@@ -84,25 +84,61 @@ class InspectionController extends Controller
 
     $selectedForklift = null;
 
-    // QR Code
-    if ($request->filled('qr_token')) {
+            // QR Code
+        if ($request->filled('qr_token')) {
 
-        $selectedForklift = Forklift::where('qr_token', $request->qr_token)
-            ->active()
-            ->first();
+            $selectedForklift = Forklift::where(
+                'qr_token',
+                $request->qr_token
+            )->first();
 
-    } elseif ($request->filled('forklift_id')) {
+            if (!$selectedForklift) {
+                return redirect()
+                    ->route('inspections.create')
+                    ->with(
+                        'error',
+                        'QR Code forklift tidak ditemukan dalam sistem.'
+                    );
+            }
 
-        $selectedForklift = Forklift::active()
-            ->find($request->forklift_id);
+            if (!$selectedForklift->is_active) {
+                return redirect()
+                    ->route('inspections.create')
+                    ->with(
+                        'error',
+                        "Forklift {$selectedForklift->forklift_code} sedang nonaktif dan tidak dapat digunakan untuk inspeksi."
+                    );
+            }
+
+        } elseif ($request->filled('forklift_id')) {
+
+            $selectedForklift = Forklift::find($request->forklift_id);
+
+            if (!$selectedForklift) {
+                return redirect()
+                    ->route('inspections.create')
+                    ->with(
+                        'error',
+                        'Forklift tidak ditemukan dalam sistem.'
+                    );
+            }
+
+            if (!$selectedForklift->is_active) {
+                return redirect()
+                    ->route('inspections.create')
+                    ->with(
+                        'error',
+                        "Forklift {$selectedForklift->forklift_code} sedang nonaktif dan tidak dapat digunakan untuk inspeksi."
+                    );
+            }
+        }
+
+        return view('inspections.create', compact(
+            'forklifts',
+            'operators',
+            'selectedForklift'
+        ));
     }
-
-    return view('inspections.create', compact(
-        'forklifts',
-        'operators',
-        'selectedForklift'
-    ));
-}
 
     /**
      * Langkah 2: Menampilkan Formulir Lembar Kerja (Checklist) Inspeksi.
@@ -117,8 +153,19 @@ class InspectionController extends Controller
         $shift = $request->query('shift', 'Shift 1');
         $today = Carbon::today()->toDateString();
 
-        // Cari forklift yang dipilih
-        $forklift = Forklift::with('location')->findOrFail($forkliftId);
+        /// Cari forklift berdasarkan ID
+        $forklift = Forklift::with('location')
+            ->findOrFail($forkliftId);
+
+        // Tolak jika forklift berstatus nonaktif
+        if (!$forklift->is_active) {
+            return redirect()
+                ->route('inspections.create')
+                ->with(
+                    'error',
+                    "Forklift {$forklift->forklift_code} sedang nonaktif dan tidak dapat digunakan untuk inspeksi."
+                );
+        }
 
         // ATURAN BISNIS BR-012: Satu forklift hanya punya 1 inspeksi per tanggal & shift
         $existingInspection = Inspection::where('forklift_id', $forklift->id)
@@ -209,14 +256,24 @@ public function store(Request $request)
     $user = Auth::user();
 
     $forklift = Forklift::with('location')
-        ->active()
-        ->when($user->location_id, function ($query) use ($user) {
-            $query->where('location_id', $user->location_id);
-        })
+        ->when(
+            !$user->isAdmin(),
+            function ($query) use ($user) {
+                $query->where('location_id', $user->location_id);
+            }
+        )
         ->findOrFail($request->forklift_id);
 
-
-    $today = Carbon::today()->toDateString();
+    // Tolak submit jika forklift nonaktif
+    if (!$forklift->is_active) {
+        return redirect()
+            ->back()
+            ->withInput()
+            ->with(
+                'error',
+                "Forklift {$forklift->forklift_code} sedang nonaktif dan tidak dapat digunakan untuk inspeksi."
+            );
+    }
 
 
     // =========================================================
@@ -269,6 +326,8 @@ public function store(Request $request)
 
             $inspection->inspection_number =
                 InspectionNumberService::generate($forklift);
+
+                $operator = null;
 
                         if ($user->isAdmin()) {
                 $operatorId = $request->input('operator_id');

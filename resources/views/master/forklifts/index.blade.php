@@ -202,4 +202,124 @@
         
     </div>
 </div>
+
+{{-- SweetAlert2 --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        /*
+        |--------------------------------------------------------------------------
+        | Konfirmasi Hapus Forklift
+        |--------------------------------------------------------------------------
+        */
+
+        document.querySelectorAll('.delete-forklift-form').forEach(function (form) {
+
+            form.addEventListener('submit', function (event) {
+
+                event.preventDefault();
+
+                const forkliftCode = form.dataset.forkliftCode;
+
+                Swal.fire({
+                    title: 'Hapus Unit Forklift?',
+                    text: 'Data ' + forkliftCode + ' akan dihapus dari daftar unit.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Hapus',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    reverseButtons: true,
+                    focusCancel: true
+                }).then(function (result) {
+
+                    if (result.isConfirmed) {
+
+                        Swal.fire({
+                            title: 'Memproses...',
+                            text: 'Sedang menghapus unit ' + forkliftCode,
+                            icon: 'info',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            showConfirmButton: false,
+                            didOpen: function () {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        /*
+                        | Submit form asli agar method DELETE,
+                        | CSRF, dan route tetap berjalan normal.
+                        */
+                        form.submit();
+                    }
+
+                });
+
+            });
+
+        });
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Notifikasi Berhasil
+        |--------------------------------------------------------------------------
+        */
+
+        @if (session('success'))
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: @json(session('success')),
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#007bff'
+            });
+
+        @endif
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Notifikasi Gagal
+        |--------------------------------------------------------------------------
+        */
+
+        @if (session('error'))
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: @json(session('error')),
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#dc3545'
+            });
+
+        @endif
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Notifikasi Validasi Error
+        |--------------------------------------------------------------------------
+        */
+
+        @if ($errors->any())
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Terjadi Kesalahan',
+                html: @json(implode('<br>', $errors->all())),
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#dc3545'
+            });
+
+        @endif
+
+    });
+</script>
 @endsection
