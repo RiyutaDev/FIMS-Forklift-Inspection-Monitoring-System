@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\InspectionController;
+use App\Http\Controllers\Web\QrScanController;
 use App\Http\Controllers\Web\ApprovalController;
 use App\Http\Controllers\Web\ReportController;
 use App\Http\Controllers\Web\VendorController;
@@ -41,6 +42,16 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
+
+
+/*
+|--------------------------------------------------------------------------
+| QR SCAN FORKLIFT
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/qr/forklift/{qr_token}', [QrScanController::class, 'scan'])
+    ->name('qr.forklift.scan');
 
 
 /*

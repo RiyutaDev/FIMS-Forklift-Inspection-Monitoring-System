@@ -5,10 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class InspectionItem extends Model
 {
     use HasFactory, SoftDeletes;
+
+    /*
+    |--------------------------------------------------------------------------
+    | MODEL CONFIGURATION
+    |--------------------------------------------------------------------------
+    */
 
     /**
      * Table Name
@@ -20,16 +28,19 @@ class InspectionItem extends Model
      */
     protected $primaryKey = 'id';
 
-    /**
-     * Mass Assignment
-     */
-    protected $fillable = [
+    /*
+    |--------------------------------------------------------------------------
+    | MASS ASSIGNMENT
+    |--------------------------------------------------------------------------
+    */
 
+    protected $fillable = [
         /*
         |--------------------------------------------------------------------------
         | Relationship
         |--------------------------------------------------------------------------
         */
+
         'inspection_category_id',
 
         /*
@@ -37,6 +48,7 @@ class InspectionItem extends Model
         | Item Information
         |--------------------------------------------------------------------------
         */
+
         'item_code',
         'item_name',
         'description',
@@ -46,6 +58,7 @@ class InspectionItem extends Model
         | Applicable Forklift Type
         |--------------------------------------------------------------------------
         */
+
         'applicable_fuel_type',
 
         /*
@@ -53,6 +66,7 @@ class InspectionItem extends Model
         | Input Configuration
         |--------------------------------------------------------------------------
         */
+
         'input_type',
         'unit',
 
@@ -61,6 +75,7 @@ class InspectionItem extends Model
         | Inspection Rules
         |--------------------------------------------------------------------------
         */
+
         'is_critical',
         'requires_photo',
         'requires_note',
@@ -70,6 +85,7 @@ class InspectionItem extends Model
         | Display Configuration
         |--------------------------------------------------------------------------
         */
+
         'sort_order',
 
         /*
@@ -77,26 +93,33 @@ class InspectionItem extends Model
         | Status
         |--------------------------------------------------------------------------
         */
-        'is_active',
 
+        'is_active',
     ];
 
-    /**
-     * Hidden Attributes
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | HIDDEN ATTRIBUTES
+    |--------------------------------------------------------------------------
+    */
+
     protected $hidden = [];
 
-    /**
-     * Attribute Casting
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | ATTRIBUTE CASTING
+    |--------------------------------------------------------------------------
+    */
+
     protected $casts = [
+        'inspection_category_id' => 'integer',
 
-        'is_critical'    => 'boolean',
-        'requires_photo' => 'boolean',
-        'requires_note'  => 'boolean',
-        'is_active'      => 'boolean',
-        'sort_order'     => 'integer',
+        'is_critical'            => 'boolean',
+        'requires_photo'        => 'boolean',
+        'requires_note'         => 'boolean',
+        'is_active'             => 'boolean',
 
+        'sort_order'            => 'integer',
     ];
 
     /*
@@ -106,24 +129,50 @@ class InspectionItem extends Model
     */
 
     /**
-     * Item belongs to Inspection Category
+     * Item belongs to Inspection Category.
+     *
+     * Penggunaan:
+     *
+     * $item->category
      */
-    public function category()
+    public function category(): BelongsTo
     {
         return $this->belongsTo(
             InspectionCategory::class,
-            'inspection_category_id'
+            'inspection_category_id',
+            'id'
         );
     }
 
     /**
-     * Item has many Inspection Details
+     * Alias relasi kategori.
+     *
+     * Method ini tidak mengubah relasi category() yang sudah digunakan.
+     * Bisa digunakan jika pada bagian lain aplikasi memanggil:
+     *
+     * $item->inspectionCategory
      */
-    public function inspectionDetails()
+    public function inspectionCategory(): BelongsTo
+    {
+        return $this->belongsTo(
+            InspectionCategory::class,
+            'inspection_category_id',
+            'id'
+        );
+    }
+
+    /**
+     * Item has many Inspection Details.
+     *
+     * Satu item checklist dapat memiliki banyak detail pemeriksaan
+     * dari berbagai transaksi inspeksi.
+     */
+    public function inspectionDetails(): HasMany
     {
         return $this->hasMany(
             InspectionDetail::class,
-            'inspection_item_id'
+            'inspection_item_id',
+            'id'
         );
     }
 
@@ -134,7 +183,11 @@ class InspectionItem extends Model
     */
 
     /**
-     * Active Items
+     * Mengambil item checklist yang aktif.
+     *
+     * Penggunaan:
+     *
+     * InspectionItem::active()->get();
      */
     public function scopeActive($query)
     {
@@ -142,16 +195,17 @@ class InspectionItem extends Model
     }
 
     /**
-     * Ordered Items
+     * Mengurutkan item checklist.
      */
     public function scopeOrdered($query)
     {
-        return $query->orderBy('sort_order')
-                     ->orderBy('item_name');
+        return $query
+            ->orderBy('sort_order', 'asc')
+            ->orderBy('item_name', 'asc');
     }
 
     /**
-     * Critical Items
+     * Mengambil item yang bersifat kritis.
      */
     public function scopeCritical($query)
     {
@@ -159,13 +213,19 @@ class InspectionItem extends Model
     }
 
     /**
-     * Filter by Fuel Type
+     * Filter item berdasarkan jenis bahan bakar forklift.
+     *
+     * Item dengan applicable_fuel_type = All akan selalu ditampilkan.
+     *
+     * Contoh:
+     *
+     * InspectionItem::fuelType('Electric')->get();
      */
     public function scopeFuelType($query, string $fuelType)
     {
         return $query->where(function ($q) use ($fuelType) {
             $q->where('applicable_fuel_type', 'All')
-              ->orWhere('applicable_fuel_type', $fuelType);
+                ->orWhere('applicable_fuel_type', $fuelType);
         });
     }
 
@@ -176,17 +236,25 @@ class InspectionItem extends Model
     */
 
     /**
-     * Category Name
+     * Mengambil nama kategori item.
+     *
+     * Penggunaan:
+     *
+     * $item->category_name
      */
-    public function getCategoryNameAttribute()
+    public function getCategoryNameAttribute(): ?string
     {
         return optional($this->category)->category_name;
     }
 
     /**
-     * Display Name
+     * Mengambil nama tampilan item.
+     *
+     * Contoh:
+     *
+     * FL-001 - Periksa kondisi rem
      */
-    public function getDisplayNameAttribute()
+    public function getDisplayNameAttribute(): string
     {
         return "{$this->item_code} - {$this->item_name}";
     }
@@ -197,23 +265,35 @@ class InspectionItem extends Model
     |--------------------------------------------------------------------------
     */
 
+    /**
+     * Memeriksa apakah item merupakan item kritis.
+     */
     public function isCritical(): bool
     {
-        return $this->is_critical;
+        return (bool) $this->is_critical;
     }
 
+    /**
+     * Memeriksa apakah foto wajib diunggah.
+     */
     public function requiresPhoto(): bool
     {
-        return $this->requires_photo;
+        return (bool) $this->requires_photo;
     }
 
+    /**
+     * Memeriksa apakah catatan wajib diisi.
+     */
     public function requiresNote(): bool
     {
-        return $this->requires_note;
+        return (bool) $this->requires_note;
     }
 
+    /**
+     * Memeriksa apakah item sedang aktif.
+     */
     public function isActive(): bool
     {
-        return $this->is_active;
+        return (bool) $this->is_active;
     }
 }

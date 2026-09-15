@@ -62,7 +62,17 @@ class AuthController extends Controller
             ]);
 
             // 5. Regenerasi session untuk perlindungan Session Fixation
+            $pendingQrData = $request->session()->only([
+                'pending_qr_token',
+                'pending_forklift_id',
+                'pending_forklift_code',
+            ]);
+
             $request->session()->regenerate();
+
+            if ($pendingQrData !== []) {
+                $request->session()->put($pendingQrData);
+            }
 
             // 6. Catat Activity Log Login (Sesuai BR-024)
             ActivityLog::create([

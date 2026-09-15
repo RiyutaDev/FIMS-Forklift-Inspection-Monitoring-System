@@ -893,6 +893,33 @@
 
 
             {{-- =================================================
+                 INFORMATION SESSION
+            ================================================== --}}
+
+            @if(session('info'))
+
+                <div
+                    class="alert alert-success"
+                    role="alert"
+                >
+                    <i class="fas fa-qrcode"></i>
+
+                    {{ session('info') }}
+
+                    <button
+                        type="button"
+                        class="close"
+                        onclick="this.parentElement.remove()"
+                        aria-label="Close"
+                    >
+                        &times;
+                    </button>
+                </div>
+
+            @endif
+
+
+            {{-- =================================================
                  LOGIN FORM
             ================================================== --}}
 

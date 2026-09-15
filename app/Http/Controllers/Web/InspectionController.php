@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class InspectionController extends Controller
 {
@@ -87,7 +88,7 @@ class InspectionController extends Controller
             // QR Code
         if ($request->filled('qr_token')) {
 
-            $selectedForklift = Forklift::where(
+            $selectedForklift = Forklift::with('location')->where(
                 'qr_token',
                 $request->qr_token
             )->first();
@@ -110,6 +111,12 @@ class InspectionController extends Controller
                     );
             }
 
+                    if (!$user->isAdmin() && (int) $selectedForklift->location_id !== (int) $user->location_id) {
+                    return redirect()
+                        ->route('inspections.create')
+                        ->with('error', 'Forklift tidak sesuai dengan lokasi kerja Anda.');
+                    }
+
         } elseif ($request->filled('forklift_id')) {
 
             $selectedForklift = Forklift::find($request->forklift_id);
@@ -131,6 +138,12 @@ class InspectionController extends Controller
                         "Forklift {$selectedForklift->forklift_code} sedang nonaktif dan tidak dapat digunakan untuk inspeksi."
                     );
             }
+
+                    if (!$user->isAdmin() && (int) $selectedForklift->location_id !== (int) $user->location_id) {
+                    return redirect()
+                        ->route('inspections.create')
+                        ->with('error', 'Forklift tidak sesuai dengan lokasi kerja Anda.');
+                    }
         }
 
         return view('inspections.create', compact(
@@ -155,7 +168,17 @@ class InspectionController extends Controller
 
         /// Cari forklift berdasarkan ID
         $forklift = Forklift::with('location')
-            ->findOrFail($forkliftId);
+            ->when(
+                !$user->isAdmin(),
+                fn ($query) => $query->where('location_id', $user->location_id)
+            )
+            ->find($forkliftId);
+
+        if (!$forklift) {
+            return redirect()
+                ->route('inspections.create')
+                ->with('error', 'Forklift tidak ditemukan atau tidak sesuai dengan lokasi kerja Anda.');
+        }
 
         // Tolak jika forklift berstatus nonaktif
         if (!$forklift->is_active) {
@@ -179,7 +202,7 @@ class InspectionController extends Controller
         }
 
         // Ambil kategori & item inspeksi aktif yang berlaku untuk tipe bahan bakar forklift ini
-        $categories = InspectionCategory::with(['items' => function ($query) use ($forklift) {
+        $categories = InspectionCategory::with(['inspectionItems' => function ($query) use ($forklift) {
             $query->where('is_active', true)
                 ->whereIn('applicable_fuel_type', ['All', $forklift->fuel_type])
                 ->orderBy('sort_order');
@@ -225,6 +248,11 @@ public function store(Request $request)
             'min:1',
         ],
 
+        'items.*' => [
+            'required',
+            'array',
+        ],
+
         'items.*.value' => [
             'required',
             'string',
@@ -236,10 +264,16 @@ public function store(Request $request)
             'max:255',
         ],
 
+        'photos' => [
+            'nullable',
+            'array',
+        ],
+
         'photos.*' => [
             'nullable',
+            'file',
             'image',
-            'mimes:jpeg,png,jpg',
+            'mimes:jpg,jpeg,png',
             'max:2048',
         ],
 
@@ -249,6 +283,8 @@ public function store(Request $request)
         ],
     ]);
 
+
+    $items = $request->input('items', []);
 
     // =========================================================
     // 2. DATA USER & FORKLIFT
@@ -264,7 +300,10 @@ public function store(Request $request)
         )
         ->findOrFail($request->forklift_id);
 
-    // Tolak submit jika forklift nonaktif
+
+    // =========================================================
+    // 3. CEK STATUS FORKLIFT TERKINI
+    // =========================================================
     if (!$forklift->is_active) {
         return redirect()
             ->back()
@@ -275,24 +314,63 @@ public function store(Request $request)
             );
     }
 
+    $itemMasters = InspectionItem::with('category')
+        ->whereIn('id', array_keys($items))
+        ->get()
+        ->keyBy('id');
+
+    foreach ($items as $itemId => $itemData) {
+        $itemMaster = $itemMasters->get($itemId);
+        $value = $itemData['value'] ?? null;
+
+        if (!$itemMaster || !$itemMaster->is_active || !$itemMaster->category?->is_active) {
+            throw ValidationException::withMessages([
+                "items.{$itemId}.value" => 'Item checklist tidak valid atau sudah tidak aktif.',
+            ]);
+        }
+
+        if (!in_array($itemMaster->applicable_fuel_type, ['All', $forklift->fuel_type], true)) {
+            throw ValidationException::withMessages([
+                "items.{$itemId}.value" => 'Item checklist tidak sesuai dengan jenis bahan bakar forklift.',
+            ]);
+        }
+
+        $isFailed = in_array($itemMaster->input_type, ['OK_NG', 'YES_NO'], true)
+            && in_array($value, ['NG', 'NO'], true);
+
+        $photo = $request->file("photos.{$itemId}");
+
+        if ($isFailed && (!$photo || !$photo->isValid())) {
+            throw ValidationException::withMessages([
+                "photos.{$itemId}" => "Foto wajib diunggah untuk item {$itemMaster->item_name} yang berstatus NG.",
+            ]);
+        }
+    }
+
 
     // =========================================================
-    // 3. TRANSACTION
+    // 4. TANGGAL INSPEKSI
+    // =========================================================
+    $today = Carbon::today()->toDateString();
+
+
+    // =========================================================
+    // 5. TRANSACTION
     // =========================================================
     try {
 
         DB::beginTransaction();
 
-
         // =====================================================
-        // 4. CEK APAKAH SUDAH ADA INSPEKSI HARIAN
-        //    UNTUK FORKLIFT + TANGGAL + SHIFT
+        // 6. CEK APAKAH SUDAH ADA INSPEKSI
         // =====================================================
         $inspection = Inspection::where('forklift_id', $forklift->id)
             ->whereDate('inspection_date', $today)
             ->where('inspection_shift', $request->inspection_shift)
             ->first();
 
+
+        $operator = $inspection?->operator;
 
         // =====================================================
         // 5. JIKA SUDAH ADA DAN BUKAN DRAFT
@@ -327,9 +405,7 @@ public function store(Request $request)
             $inspection->inspection_number =
                 InspectionNumberService::generate($forklift);
 
-                $operator = null;
-
-                        if ($user->isAdmin()) {
+            if ($user->isAdmin()) {
                 $operatorId = $request->input('operator_id');
 
                 if (!$operatorId) {
@@ -341,12 +417,19 @@ public function store(Request $request)
                         $query->whereIn('role_name', ['Operator', 'Driver']);
                     })
                     ->where('is_active', true)
-                    ->firstOrFail();
+                    ->first();
+
+                if (!$operator) {
+                    throw ValidationException::withMessages([
+                        'operator_id' => 'Operator yang dipilih tidak valid atau tidak aktif.',
+                    ]);
+                }
 
                 $inspection->operator_id = $operator->id;
 
             } else {
 
+                $operator = $user;
                 $inspection->operator_id = $user->id;
             }
 
@@ -366,18 +449,18 @@ public function store(Request $request)
         $isOverallReady = true;
 
 
-        foreach ($request->items as $itemId => $itemData) {
+        foreach ($items as $itemId => $itemData) {
 
             // -------------------------------------------------
             // Ambil master item
             // -------------------------------------------------
-            $itemMaster = InspectionItem::findOrFail($itemId);
+            $itemMaster = $itemMasters->get($itemId);
 
 
             // -------------------------------------------------
             // Pastikan item memang aktif
             // -------------------------------------------------
-            if (!$itemMaster->is_active) {
+            if (!$itemMaster || !$itemMaster->is_active) {
                 continue;
             }
 
@@ -391,7 +474,7 @@ public function store(Request $request)
             ]);
 
 
-            $value = $itemData['value'];
+            $value = $itemData['value'] ?? null;
 
             $isPassed = true;
 
@@ -448,11 +531,9 @@ public function store(Request $request)
             // =================================================
             // 11. UPLOAD FOTO
             // =================================================
-            if ($request->hasFile("photos.{$itemId}")) {
+            $file = $request->file("photos.{$itemId}");
 
-                $file = $request->file("photos.{$itemId}");
-
-
+            if ($request->hasFile("photos.{$itemId}") && $file && $file->isValid()) {
                 $path = $file->store(
                     "inspection_photos/{$today}",
                     'public'
@@ -548,7 +629,11 @@ public function store(Request $request)
         // =====================================================
         // ROLLBACK JIKA TERJADI ERROR
         // =====================================================
-        DB::rollBack();
+        if (DB::transactionLevel() > 0) {
+            DB::rollBack();
+        }
+
+        report($e);
 
 
         return redirect()
@@ -556,8 +641,7 @@ public function store(Request $request)
             ->withInput()
             ->with(
                 'error',
-                'Gagal menyimpan data inspeksi: '
-                . $e->getMessage()
+                'Gagal menyimpan data inspeksi. Silakan periksa kembali data checklist dan foto yang diunggah.'
             );
     }
 }

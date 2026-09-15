@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class InspectionCategory extends Model
 {
@@ -24,7 +25,6 @@ class InspectionCategory extends Model
      * Mass Assignment
      */
     protected $fillable = [
-
         /*
         |--------------------------------------------------------------------------
         | Category Information
@@ -50,7 +50,6 @@ class InspectionCategory extends Model
         */
 
         'is_active',
-
     ];
 
     /**
@@ -73,13 +72,15 @@ class InspectionCategory extends Model
     */
 
     /**
-     * Category has many Inspection Items
+     * Relasi utama:
+     * Satu kategori memiliki banyak item checklist.
      */
-    public function inspectionItems()
+    public function inspectionItems(): HasMany
     {
         return $this->hasMany(
             InspectionItem::class,
-            'inspection_category_id'
+            'inspection_category_id',
+            'id'
         );
     }
 
@@ -90,7 +91,7 @@ class InspectionCategory extends Model
     */
 
     /**
-     * Active Categories
+     * Mengambil kategori yang aktif.
      */
     public function scopeActive($query)
     {
@@ -98,12 +99,14 @@ class InspectionCategory extends Model
     }
 
     /**
-     * Ordered Categories
+     * Mengurutkan kategori berdasarkan sort_order,
+     * kemudian berdasarkan nama kategori.
      */
     public function scopeOrdered($query)
     {
-        return $query->orderBy('sort_order')
-                     ->orderBy('category_name');
+        return $query
+            ->orderBy('sort_order', 'asc')
+            ->orderBy('category_name', 'asc');
     }
 
     /*
@@ -113,7 +116,11 @@ class InspectionCategory extends Model
     */
 
     /**
-     * Total Inspection Items
+     * Menghitung jumlah item checklist dalam kategori.
+     *
+     * Penggunaan:
+     *
+     * $category->items_count
      */
     public function getItemsCountAttribute(): int
     {
@@ -127,10 +134,10 @@ class InspectionCategory extends Model
     */
 
     /**
-     * Check Active Status
+     * Memeriksa apakah kategori sedang aktif.
      */
     public function isActive(): bool
     {
-        return $this->is_active;
+        return (bool) $this->is_active;
     }
 }

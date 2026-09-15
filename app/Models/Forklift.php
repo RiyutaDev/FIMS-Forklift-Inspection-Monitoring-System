@@ -156,7 +156,9 @@ class Forklift extends Model
 
     public function generateQrUrl(): string
     {
-        return url('/inspections/create?qr_token=' . $this->qr_token);
+        return route('qr.forklift.scan', [
+            'qr_token' => $this->qr_token,
+        ]);
     }
 
     public function isElectric(): bool
