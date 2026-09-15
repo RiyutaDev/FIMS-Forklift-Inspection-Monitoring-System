@@ -79,7 +79,7 @@ class InspectionCategory extends Model
     {
         return $this->hasMany(
             InspectionItem::class,
-            'category_id'
+            'inspection_category_id'
         );
     }
 

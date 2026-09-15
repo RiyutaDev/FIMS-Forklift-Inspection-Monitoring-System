@@ -219,6 +219,11 @@ class Inspection extends Model
         return $this->status === 'Rejected';
     }
 
+    public function isFinalStatus(): bool
+    {
+        return $this->isApproved() || $this->isRejected();
+    }
+
     public function isReady(): bool
     {
         return $this->overall_result === 'Ready';

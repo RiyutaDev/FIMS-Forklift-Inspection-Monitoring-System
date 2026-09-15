@@ -63,4 +63,67 @@
         @if ($items->hasPages())<div class="inspection-pagination">{{ $items->links() }}</div>@endif
     </section>
 </div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.delete-item-form').forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                const itemName = form.dataset.itemName;
+
+                Swal.fire({
+                    title: 'Hapus Item Inspeksi?',
+                    text: 'Item "' + itemName + '" akan dihapus dari daftar.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Hapus',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    reverseButtons: true,
+                    focusCancel: true
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Menghapus...',
+                            text: 'Mohon tunggu sebentar.',
+                            icon: 'info',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            showConfirmButton: false,
+                            didOpen: function () {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        form.submit();
+                    }
+                });
+            });
+        });
+
+        @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: @json(session('success')),
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#007bff'
+            });
+        @endif
+
+        @if (session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: @json(session('error')),
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#dc3545'
+            });
+        @endif
+    });
+</script>
+@endpush
 @endsection

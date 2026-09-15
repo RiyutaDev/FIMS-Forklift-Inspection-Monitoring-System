@@ -114,7 +114,7 @@ class InspectionItemController extends Controller
             'item_name' => [
                 'required',
                 'string',
-                'max:150',
+                'max:100',
             ],
 
             'description' => [
@@ -283,7 +283,7 @@ class InspectionItemController extends Controller
             'item_name' => [
                 'required',
                 'string',
-                'max:150',
+                'max:100',
             ],
 
             'description' => [

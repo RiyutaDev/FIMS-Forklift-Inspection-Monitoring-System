@@ -382,7 +382,7 @@
 
 
                                 {{-- CHANGE STATUS --}}
-                                @if(auth()->user()->isAdmin())
+                                @if(auth()->user()->isAdmin() && !$inspection->isFinalStatus())
 
                                     <button
                                         type="button"

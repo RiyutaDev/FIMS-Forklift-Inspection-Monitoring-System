@@ -410,13 +410,13 @@
 
                 {{-- Kategori --}}
                 <div class="form-group">
-                    <label for="category_id" class="form-label">
+                    <label for="inspection_category_id" class="form-label">
                         Kategori <span class="required">*</span>
                     </label>
 
                     <select
-                        id="category_id"
-                        name="category_id"
+                        id="inspection_category_id"
+                        name="inspection_category_id"
                         class="form-control"
                         required
                     >
@@ -426,7 +426,7 @@
                             <option
                                 value="{{ $category->id }}"
                                 @selected(
-                                    old('category_id', $inspectionItem->category_id) == $category->id
+                                    old('inspection_category_id', $inspectionItem->inspection_category_id) == $category->id
                                 )
                             >
                                 {{ $category->category_name }}
@@ -444,7 +444,7 @@
                         </div>
                     @endif
 
-                    @error('category_id')
+                    @error('inspection_category_id')
                         <div class="error-text">{{ $message }}</div>
                     @enderror
                 </div>
@@ -461,20 +461,20 @@
                         class="form-control"
                         required
                     >
-                        <option value="ALL"
-                            @selected(old('applicable_fuel_type', $inspectionItem->applicable_fuel_type) == 'ALL')
+                        <option value="All"
+                            @selected(old('applicable_fuel_type', $inspectionItem->applicable_fuel_type) == 'All')
                         >
                             Semua Jenis
                         </option>
 
-                        <option value="ELECTRIC"
-                            @selected(old('applicable_fuel_type', $inspectionItem->applicable_fuel_type) == 'ELECTRIC')
+                        <option value="Electric"
+                            @selected(old('applicable_fuel_type', $inspectionItem->applicable_fuel_type) == 'Electric')
                         >
                             Electric
                         </option>
 
-                        <option value="DIESEL"
-                            @selected(old('applicable_fuel_type', $inspectionItem->applicable_fuel_type) == 'DIESEL')
+                        <option value="Diesel"
+                            @selected(old('applicable_fuel_type', $inspectionItem->applicable_fuel_type) == 'Diesel')
                         >
                             Diesel
                         </option>

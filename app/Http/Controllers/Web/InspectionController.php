@@ -606,6 +606,15 @@ public function store(Request $request)
             $oldStatus = $inspection->status;
             $newStatus = $validated['status'];
 
+            if ($inspection->isFinalStatus()) {
+                return redirect()
+                    ->back()
+                    ->with(
+                        'error',
+                        "Inspeksi dengan status {$oldStatus} tidak dapat diubah lagi."
+                    );
+            }
+
             // Jika status sama, tidak perlu melakukan perubahan
             if ($oldStatus === $newStatus) {
                 return redirect()
